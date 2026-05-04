@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trinity Combined Netlify</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #080b14;
+  --surface: #111626;
+  --surface2: #171d31;
+  --border: #273150;
+  --text: #e7ebf9;
+  --muted: #95a0c7;
+  --primary: #3b82f6;
+  --secondary: #14b8a6;
+}
+body {
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.14), transparent 38%),
+              radial-gradient(circle at 80% 85%, rgba(20, 184, 166, 0.12), transparent 35%),
+              var(--bg);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.card {
+  width: min(820px, 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 40%), var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 28px;
+}
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  margin-bottom: 10px;
+}
+.subtitle {
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 18px;
+}
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.badge {
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  padding: 6px 12px;
+}
+.links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  padding: 12px 16px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: 0.2s ease;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), #1d4ed8);
+  color: white;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+.btn-ghost {
+  background: var(--surface2);
+  border-color: var(--border);
+  color: var(--text);
+}
+.btn-ghost:hover {
+  border-color: var(--primary);
+}
+.note {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="title">Combined Strategy Dashboard</div>
+    <p class="subtitle">
+      This folder contains the generated Netlify-style report for three strategies with version controls
+      (E1/E4/E8), leverage controls, and risk-capital controls.
+      Default view is aligned to the reference profile: INR5L capital, 5% daily risk, 3x leverage, flat mode.
+    </p>
+    <div class="badges">
+      <span class="badge">3 Strategies</span>
+      <span class="badge">Flat + Compounding</span>
+      <span class="badge">E1 / E4 / E8</span>
+      <span class="badge">Leverage: 1x / 2xS / 3xS / 2xO / 3xO</span>
+      <span class="badge">Default: INR5L / 5% / 3xS / Flat / S3</span>
+    </div>
+    <div class="links">
+      <a class="btn btn-primary" href="report.html">Open Combined Report</a>
+      <a class="btn btn-ghost" href="build_combined_netlify.py">Builder Script</a>
+    </div>
+    <div class="note">Run build_combined_netlify.py after changing strategy payloads to regenerate all combo files.</div>
+  </div>
+</body>
+</html>

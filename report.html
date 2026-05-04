@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trinity - Combined Strategy Report</title>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="meta.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #070b14;
+  --surface: #101726;
+  --surface2: #171f33;
+  --surface3: #1f2942;
+  --border: #293553;
+  --text: #e6ecff;
+  --muted: #96a5cb;
+  --primary: #4f8cff;
+  --green: #22c55e;
+  --red: #ef4444;
+  --amber: #f59e0b;
+  --pink: #ec4899;
+}
+body {
+  background: radial-gradient(circle at 12% 12%, rgba(79, 140, 255, 0.16), transparent 35%),
+              radial-gradient(circle at 86% 88%, rgba(236, 72, 153, 0.12), transparent 34%),
+              var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+}
+.container {
+  max-width: 1700px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.header-row a {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 0.86rem;
+}
+h1 {
+  font-size: 1.48rem;
+  font-weight: 800;
+  color: #ddebff;
+}
+.subtitle {
+  color: var(--muted);
+  font-size: 0.84rem;
+  margin-bottom: 14px;
+}
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.tab {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-weight: 700;
+  transition: 0.2s;
+}
+.tab:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+.tab.active {
+  color: #fff;
+  border-color: transparent;
+}
+.tab.mode.active { background: linear-gradient(135deg, #f59e0b, #f97316); }
+.tab.strategy.active { background: linear-gradient(135deg, #2563eb, #4f46e5); }
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.row .label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  min-width: 90px;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: 700;
+}
+.chip:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+.chip.exit.active { background: #5b6ee8; border-color: #5b6ee8; color: #fff; }
+.chip.lev.active { background: var(--pink); border-color: var(--pink); color: #000; }
+.chip.cfg.active { background: #1fd483; border-color: #1fd483; color: #00230e; }
+.variant-info {
+  margin-top: 8px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 12px 14px;
+  line-height: 1.6;
+}
+.variant-info .title {
+  color: #cde0ff;
+  font-size: 0.94rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.variant-info .meta {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.notice {
+  border: 1px solid #7f1d1d;
+  background: rgba(127, 29, 29, 0.22);
+  color: #fecaca;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  display: none;
+}
+.year-bar {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.year-label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  margin-right: 8px;
+}
+.year-btn {
+  border: 1px solid #4e5e93;
+  border-radius: 7px;
+  color: #8ca4ff;
+  background: transparent;
+  padding: 5px 11px;
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+.year-btn.active {
+  background: #6f74ff;
+  border-color: #6f74ff;
+  color: #fff;
+}
+.view-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.view-btn {
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  border-radius: 9px;
+  color: var(--muted);
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.view-btn.active {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+}
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.kpi {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 9px;
+  padding: 10px;
+  text-align: center;
+}
+.kpi .k {
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.kpi .v {
+  margin-top: 3px;
+  font-size: 1.06rem;
+  font-weight: 800;
+}
+.pos { color: var(--green); }
+.neg { color: var(--red); }
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.chart-box {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 10px;
+}
+.chart-title {
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.panel {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+.heat-wrap {
+  max-height: 460px;
+  overflow: auto;
+  border: none;
+}
+.is-hidden {
+  display: none;
+}
+.panel h3 {
+  color: #bcd0ff;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+.table-wrap {
+  max-height: 420px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.74rem;
+}
+th, td {
+  border-bottom: 1px solid var(--border);
+  padding: 6px 8px;
+  text-align: right;
+  white-space: nowrap;
+}
+th {
+  background: var(--surface2);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.66rem;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+td:first-child, th:first-child { text-align: left; }
+tr:hover td { background: var(--surface2); }
+.heat { border-collapse: separate; border-spacing: 3px; }
+.heat th { position: static; background: transparent; border: none; }
+.heat td { border: none; text-align: center; }
+.heat-cell {
+  border-radius: 7px;
+  padding: 8px 4px;
+  min-width: 64px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.heat-zero {
+  background: var(--surface2);
+  color: var(--muted);
+}
+.heat-pos {
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+}
+.heat-neg {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+.loading {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 11, 20, 0.75);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: #c7d7ff;
+  font-weight: 800;
+  z-index: 99;
+}
+@media (max-width: 1200px) {
+  .chart-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="loading" id="loading">Loading data...</div>
+<div class="container">
+  <div class="header-row">
+    <a href="index.html">&larr; Back</a>
+    <a href="build_combined_netlify.py">Builder Script</a>
+  </div>
+  <h1>Trinity - Combined Strategy Dashboard</h1>
+  <p class="subtitle" id="subtitle"></p>
+
+  <div class="tabs" id="modeTabs"></div>
+  <div class="tabs" id="strategyTabs"></div>
+
+  <div class="row">
+    <div class="label">EXIT</div>
+    <div class="chips" id="exitTabs"></div>
+  </div>
+  <div class="row">
+    <div class="label">LEVERAGE</div>
+    <div class="chips" id="levTabs"></div>
+  </div>
+  <div class="row">
+    <div class="label">RISK</div>
+    <div class="chips" id="cfgTabs"></div>
+  </div>
+
+  <div class="variant-info" id="variantInfo"></div>
+  <div class="notice" id="noData"></div>
+
+  <div class="year-bar" id="yearBar"></div>
+
+  <div class="view-tabs">
+    <button class="view-btn active" id="viewMonthly" onclick="setView('monthly')">Monthly</button>
+    <button class="view-btn" id="viewDaily" onclick="setView('daily')">Daily</button>
+  </div>
+
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <div class="chart-grid">
+    <div class="chart-box">
+      <div class="chart-title">Equity Curve</div>
+      <div id="equityChart"></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Drawdown %</div>
+      <div id="ddChart"></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Monthly P&amp;L</div>
+      <div id="monthlyChart"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="monthlyPanel">
+    <h3>Yearly Monthly Heatmap</h3>
+    <div class="table-wrap heat-wrap">
+      <table class="heat" id="heatTable"></table>
+    </div>
+  </div>
+
+  <div class="panel is-hidden" id="dailyPanel">
+    <h3>Daily P&amp;L</h3>
+    <div class="table-wrap">
+      <table id="dayTable"></table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Recent Trades</h3>
+    <div class="table-wrap">
+      <table id="tradeTable"></table>
+    </div>
+  </div>
+</div>
+
+<script>
+const META = window.DASH_META || null;
+
+const state = {
+  mode: "flat",
+  strategy: "",
+  exit: "e1",
+  lev: "3xS",
+  baseCfg: "500k_5pct",
+  year: "all",
+  view: "monthly",
+};
+
+const cache = {
+  summary: {},
+  detail: {},
+};
+
+const charts = {
+  equity: null,
+  dd: null,
+  monthly: null,
+};
+
+function fmtInt(value) {
+  return Math.round(value || 0).toLocaleString("en-IN");
+}
+
+function fmtPct(value) {
+  return `${(value || 0).toFixed(2)}%`;
+}
+
+function fmtRiskPct(value) {
+  const pct = (value || 0) * 100;
+  return Number.isInteger(pct) ? `${pct}%` : `${pct.toFixed(2)}%`;
+}
+
+function fmtMoney(value) {
+  const sign = (value || 0) < 0 ? "-" : "";
+  return `${sign}\u20B9${Math.abs(value || 0).toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
+}
+
+function cls(value) {
+  return (value || 0) >= 0 ? "pos" : "neg";
+}
+
+function num(value, fallback = 0) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function round2(value) {
+  return Math.round(num(value) * 100) / 100;
+}
+
+function sortDaysAsc(dayStats) {
+  return [...(dayStats || [])].sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+}
+
+function sortTradesAsc(trades) {
+  return [...(trades || [])].sort((a, b) => {
+    const dateCmp = String(a.date || "").localeCompare(String(b.date || ""));
+    if (dateCmp) return dateCmp;
+    const timeCmp = String(a.entryTime || "").localeCompare(String(b.entryTime || ""));
+    if (timeCmp) return timeCmp;
+    return String(a.symbol || "").localeCompare(String(b.symbol || ""));
+  });
+}
+
+function calcCharges(entryPrice, qty, grossPnl) {
+  const sellValue = num(entryPrice) * num(qty);
+  const buyValue = sellValue - num(grossPnl);
+  const turnover = sellValue + buyValue;
+  const brokerage = Math.min(sellValue * 0.0003, 20) + Math.min(buyValue * 0.0003, 20);
+  const exchange = turnover * 0.0000307;
+  const stt = sellValue * 0.00025;
+  const sebi = turnover * 0.000001;
+  const stamp = buyValue * 0.00003;
+  const gst = (brokerage + exchange + sebi) * 0.18;
+  return round2(brokerage + exchange + stt + sebi + stamp + gst);
+}
+
+function buildTradeSlices(trades) {
+  const monthly = {};
+  const monthlyCharges = {};
+  const dayMap = new Map();
+
+  sortTradesAsc(trades).forEach((trade) => {
+    const date = String(trade.date || "");
+    if (!date) return;
+
+    const pnl = round2(num(trade.pnl));
+    const gross = round2(num(trade.grossPnl));
+    const charges = round2(num(trade.charges));
+    const monthKey = date.slice(0, 7);
+
+    monthly[monthKey] = round2(num(monthly[monthKey]) + pnl);
+    monthlyCharges[monthKey] = round2(num(monthlyCharges[monthKey]) + charges);
+
+    if (!dayMap.has(date)) {
+      dayMap.set(date, {
+        date,
+        trades: 0,
+        wins: 0,
+        losses: 0,
+        pnl: 0,
+        gross: 0,
+        charges: 0,
+        symbols: new Set(),
+      });
+    }
+
+    const day = dayMap.get(date);
+    day.trades += 1;
+    if (pnl > 0) day.wins += 1;
+    else day.losses += 1;
+    day.pnl = round2(day.pnl + pnl);
+    day.gross = round2(day.gross + gross);
+    day.charges = round2(day.charges + charges);
+    if (trade.symbol) day.symbols.add(trade.symbol);
+  });
+
+  const dayStats = Array.from(dayMap.values())
+    .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")))
+    .map((day) => ({
+      ...day,
+      symbols: Array.from(day.symbols).sort().join(", "),
+    }));
+
+  return {
+    monthly,
+    monthlyCharges,
+    weekly: {},
+    dayStats,
+  };
+}
+
+function replayCompoundYear(detail, trades) {
+  const cfg = getActiveConfig();
+  const initialCapital = round2(num(cfg ? cfg.base_capital : detail.initialCapital));
+  const riskPct = num(cfg ? cfg.risk_pct : 0);
+  const leverage = Math.max(num(cfg ? cfg.lev : 1, 1), 1);
+  const equityFloor = initialCapital * 0.5;
+  let runningEquity = initialCapital;
+
+  const tradesByDay = new Map();
+  sortTradesAsc(trades).forEach((trade) => {
+    const date = String(trade.date || "");
+    if (!date) return;
+    if (!tradesByDay.has(date)) tradesByDay.set(date, []);
+    tradesByDay.get(date).push(trade);
+  });
+
+  const replayedTrades = [];
+
+  tradesByDay.forEach((dayTrades) => {
+    const nStocks = dayTrades.length;
+    if (!nStocks) return;
+
+    const effectiveEquity = Math.max(runningEquity, equityFloor);
+    const leveragedCapital = effectiveEquity * leverage;
+    const dailyRisk = leveragedCapital * riskPct;
+    const riskPerStock = dailyRisk / nStocks;
+    const capitalPerStock = leveragedCapital / nStocks;
+
+    dayTrades.forEach((trade) => {
+      const riskPerShare = num(trade.riskPerSh);
+      const oldQty = num(trade.qty);
+      const entryPrice = num(trade.entryPrice);
+
+      if (riskPerShare <= 0 || oldQty <= 0 || entryPrice <= 0) return;
+
+      const newQty = Math.min(
+        Math.floor(riskPerStock / riskPerShare),
+        Math.floor(capitalPerStock / entryPrice),
+      );
+
+      if (newQty < 1) return;
+
+      const grossPerShare = num(trade.grossPnl) / oldQty;
+      const grossPnl = round2(grossPerShare * newQty);
+      const charges = calcCharges(entryPrice, newQty, grossPnl);
+      const pnl = round2(grossPnl - charges);
+
+      replayedTrades.push({
+        ...trade,
+        qty: newQty,
+        grossPnl,
+        charges,
+        pnl,
+        capitalDeployed: round2(entryPrice * newQty),
+        riskAlloc: round2(riskPerStock),
+        stocksInDay: nStocks,
+      });
+
+      runningEquity = round2(runningEquity + pnl);
+    });
+  });
+
+  return {
+    ...detail,
+    ...buildTradeSlices(replayedTrades),
+    trades: replayedTrades,
+  };
+}
+
+function defaultId(items, preferredId) {
+  if (!Array.isArray(items) || !items.length) return "";
+  if (preferredId && items.some((item) => item.id === preferredId)) return preferredId;
+  return items[0].id;
+}
+
+function showLoading(show) {
+  document.getElementById("loading").style.display = show ? "flex" : "none";
+}
+
+function activeStrategyMeta() {
+  return META.strategies.find((s) => s.id === state.strategy) || META.strategies[0];
+}
+
+function getActiveConfig() {
+  let cfg = META.configs.find((c) => c.base_id === state.baseCfg && c.lev_id === state.lev);
+  if (!cfg) {
+    cfg = META.configs[0];
+    state.baseCfg = cfg.base_id;
+    state.lev = cfg.lev_id;
+  }
+  return cfg;
+}
+
+function comboKey(cfg) {
+  return `${state.strategy}_${state.exit}_${cfg.id}`;
+}
+
+function summaryCacheKey() {
+  return `${state.strategy}_${state.mode}`;
+}
+
+function detailCacheKey(key) {
+  return `${state.strategy}_${state.mode}_${key}`;
+}
+
+async function loadSummary() {
+  const key = summaryCacheKey();
+  if (cache.summary[key]) return cache.summary[key];
+  const url = `${state.strategy}/summary_${state.mode}.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to load summary: ${url}`);
+  const data = await res.json();
+  cache.summary[key] = data;
+  return data;
+}
+
+async function loadDetail(key) {
+  const ck = detailCacheKey(key);
+  if (cache.detail[ck]) return cache.detail[ck];
+  const url = `${state.strategy}/data_${state.mode}/${key}.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to load detail: ${url}`);
+  const data = await res.json();
+  cache.detail[ck] = data;
+  return data;
+}
+
+function renderTopTabs() {
+  document.getElementById("modeTabs").innerHTML = META.modes
+    .map((m) => `<button class="tab mode ${m.id === state.mode ? "active" : ""}" onclick="setMode('${m.id}')">${m.label}</button>`)
+    .join("");
+
+  document.getElementById("strategyTabs").innerHTML = META.strategies
+    .map((s) => `<button class="tab strategy ${s.id === state.strategy ? "active" : ""}" onclick="setStrategy('${s.id}')">${s.title}</button>`)
+    .join("");
+}
+
+function renderFilterRows() {
+  document.getElementById("exitTabs").innerHTML = META.exits
+    .map((e) => `<button class="chip exit ${e.id === state.exit ? "active" : ""}" onclick="setExit('${e.id}')">${e.short}</button>`)
+    .join("");
+
+  document.getElementById("levTabs").innerHTML = META.leverages
+    .map((l) => `<button class="chip lev ${l.id === state.lev ? "active" : ""}" onclick="setLev('${l.id}')">${l.short}</button>`)
+    .join("");
+
+  document.getElementById("cfgTabs").innerHTML = META.baseConfigs
+    .map((c) => `<button class="chip cfg ${c.id === state.baseCfg ? "active" : ""}" onclick="setBaseCfg('${c.id}')">${c.short}</button>`)
+    .join("");
+}
+
+function renderVariantInfo() {
+  const strat = activeStrategyMeta();
+  const cfg = getActiveConfig();
+  const exit = META.exits.find((e) => e.id === state.exit);
+  const lev = META.leverages.find((l) => l.id === state.lev);
+  const modeLabel = state.mode === "flat" ? "Flat (No Compounding)" : "Compounding";
+
+  document.getElementById("variantInfo").innerHTML = `
+    <div class="title">${strat.title}</div>
+    <div class="meta"><strong>Profile:</strong> ${fmtMoney(cfg.base_capital)} Capital | ${fmtRiskPct(cfg.base_risk_pct)} Daily Risk | ${lev ? lev.label : state.lev}</div>
+    <div class="meta"><strong>Mode:</strong> ${modeLabel} | <strong>Version:</strong> ${exit ? exit.name : state.exit}</div>
+    <div class="meta"><strong>Config:</strong> ${cfg.label} | <strong>Source:</strong> ${strat.sourceEngine || "N/A"}</div>
+  `;
+
+  document.getElementById("subtitle").textContent = `${strat.title} | ${modeLabel} | ${cfg.short} | ${lev ? lev.short : state.lev}`;
+}
+
+function setMode(modeId) {
+  state.mode = modeId;
+  state.year = "all";
+  refresh();
+}
+
+function setStrategy(strategyId) {
+  state.strategy = strategyId;
+  state.year = "all";
+  refresh();
+}
+
+function setExit(exitId) {
+  state.exit = exitId;
+  refresh();
+}
+
+function setLev(levId) {
+  state.lev = levId;
+  refresh();
+}
+
+function setBaseCfg(cfgId) {
+  state.baseCfg = cfgId;
+  refresh();
+}
+
+function setYear(year) {
+  state.year = year;
+  refreshDataOnly();
+}
+
+function setView(view) {
+  state.view = view;
+  document.getElementById("viewMonthly").classList.toggle("active", view === "monthly");
+  document.getElementById("viewDaily").classList.toggle("active", view === "daily");
+  document.getElementById("monthlyPanel").style.display = view === "monthly" ? "block" : "none";
+  document.getElementById("dailyPanel").style.display = view === "daily" ? "block" : "none";
+}
+
+function yearsFromDetail(detail) {
+  const years = new Set();
+  (detail.dayStats || []).forEach((d) => {
+    const year = String(d.date || "").slice(0, 4);
+    if (/^\d{4}$/.test(year)) years.add(year);
+  });
+  Object.keys(detail.monthly || {}).forEach((k) => {
+    const year = String(k).slice(0, 4);
+    if (/^\d{4}$/.test(year)) years.add(year);
+  });
+  return Array.from(years).sort();
+}
+
+function renderYearBar(detail) {
+  const years = yearsFromDetail(detail);
+  let html = `<span class="year-label">YEAR</span>`;
+  html += `<button class="year-btn ${state.year === "all" ? "active" : ""}" onclick="setYear('all')">All</button>`;
+  html += years.map((y) => `<button class="year-btn ${state.year === y ? "active" : ""}" onclick="setYear('${y}')">${y}</button>`).join("");
+  html += `<button class="year-btn" onclick="setYear('all')">Reset</button>`;
+  document.getElementById("yearBar").innerHTML = html;
+}
+
+function deriveFilteredMetrics(detail, filtered) {
+  const filteredDaysAsc = sortDaysAsc(filtered.dayStats);
+  const cfg = getActiveConfig();
+  const initialCapital = round2(num(cfg ? cfg.base_capital : detail.initialCapital));
+  let currentEquity = initialCapital;
+  let peak = initialCapital;
+
+  const equity = [initialCapital];
+  const drawdown = [0];
+
+  let totalTrades = 0;
+  let wins = 0;
+  let losses = 0;
+  let totalPnl = 0;
+  let totalGrossPnl = 0;
+  let totalCharges = 0;
+  let grossProfit = 0;
+  let grossLoss = 0;
+
+  filteredDaysAsc.forEach((d) => {
+    const trades = num(d.trades);
+    const dayWins = num(d.wins);
+    const dayLosses = num(d.losses);
+    const pnl = num(d.pnl);
+    const gross = num(d.gross);
+    const charges = num(d.charges);
+
+    totalTrades += trades;
+    wins += dayWins;
+    losses += dayLosses;
+    totalPnl += pnl;
+    totalGrossPnl += gross;
+    totalCharges += charges;
+
+    if (gross >= 0) grossProfit += gross;
+    else grossLoss += Math.abs(gross);
+
+    currentEquity = round2(currentEquity + pnl);
+    equity.push(currentEquity);
+    peak = Math.max(peak, currentEquity);
+
+    const dd = peak <= 0 ? 0 : ((peak - currentEquity) / peak) * 100;
+    drawdown.push(round2(dd));
+  });
+
+  const finalCapital = round2(initialCapital + totalPnl);
+  const winRate = totalTrades ? round2((wins / totalTrades) * 100) : 0;
+  const roc = initialCapital ? round2((round2(totalPnl) / initialCapital) * 100) : 0;
+  const profitFactor = grossLoss ? round2(grossProfit / grossLoss) : 0;
+  const maxDrawdown = drawdown.length ? round2(Math.max(...drawdown)) : 0;
+
+  return {
+    ...filtered,
+    totalTrades,
+    wins,
+    losses,
+    totalPnl: round2(totalPnl),
+    totalGrossPnl: round2(totalGrossPnl),
+    totalCharges: round2(totalCharges),
+    winRate,
+    profitFactor,
+    maxDrawdown,
+    initialCapital,
+    finalCapital,
+    roc,
+    equity,
+    drawdown,
+  };
+}
+
+function filterByYear(detail) {
+  const yearPrefix = state.year === "all" ? "" : `${state.year}-`;
+
+  const monthly = {};
+  Object.entries(detail.monthly || {}).forEach(([k, v]) => {
+    if (!yearPrefix || k.startsWith(yearPrefix)) monthly[k] = v;
+  });
+
+  const monthlyCharges = {};
+  Object.entries(detail.monthlyCharges || {}).forEach(([k, v]) => {
+    if (!yearPrefix || k.startsWith(yearPrefix)) monthlyCharges[k] = v;
+  });
+
+  const weekly = {};
+  Object.entries(detail.weekly || {}).forEach(([k, v]) => {
+    if (!yearPrefix || k.startsWith(`${state.year}-`)) weekly[k] = v;
+  });
+
+  const dayStats = (detail.dayStats || []).filter((d) => !yearPrefix || String(d.date).startsWith(yearPrefix));
+  const trades = (detail.trades || []).filter((t) => !yearPrefix || String(t.date).startsWith(yearPrefix));
+
+  let filtered = {
+    ...detail,
+    monthly,
+    monthlyCharges,
+    weekly,
+    dayStats,
+    trades,
+  };
+
+  if (state.mode === "compound" && state.year !== "all") {
+    filtered = replayCompoundYear(detail, trades);
+  }
+
+  return deriveFilteredMetrics(detail, filtered);
+}
+
+function renderKPIs(detail) {
+  const items = [
+    ["Total Trades", fmtInt(detail.totalTrades)],
+    ["Win Rate", fmtPct(detail.winRate), detail.winRate >= 50 ? "pos" : "neg"],
+    ["Net P&L", fmtMoney(detail.totalPnl), cls(detail.totalPnl)],
+    ["Gross P&L", fmtMoney(detail.totalGrossPnl), cls(detail.totalGrossPnl)],
+    ["Charges", fmtMoney(-Math.abs(detail.totalCharges)), "neg"],
+    ["Profit Factor", Number(detail.profitFactor || 0).toFixed(2), (detail.profitFactor || 0) >= 1 ? "pos" : "neg"],
+    ["Max Drawdown", fmtPct(detail.maxDrawdown), "neg"],
+    ["ROC", fmtPct(detail.roc), cls(detail.roc)],
+    ["Final Capital", fmtMoney(detail.finalCapital), cls((detail.finalCapital || 0) - (detail.initialCapital || 0))],
+  ];
+
+  document.getElementById("kpiGrid").innerHTML = items.map((it) => {
+    return `<div class="kpi"><div class="k">${it[0]}</div><div class="v ${it[2] || ""}">${it[1]}</div></div>`;
+  }).join("");
+}
+
+function chartBase(type, height) {
+  return {
+    chart: { type, background: "transparent", toolbar: { show: false }, animations: { enabled: false }, height },
+    theme: { mode: "dark" },
+    grid: { borderColor: "#293553", strokeDashArray: 3 },
+    tooltip: { theme: "dark" },
+  };
+}
+
+function destroyCharts() {
+  Object.keys(charts).forEach((k) => {
+    if (charts[k]) {
+      try { charts[k].destroy(); } catch (e) {}
+      charts[k] = null;
+    }
+  });
+}
+
+function renderCharts(detail) {
+  if (!window.ApexCharts) return;
+  destroyCharts();
+
+  charts.equity = new ApexCharts(document.getElementById("equityChart"), {
+    ...chartBase("area", 230),
+    series: [{ name: "Equity", data: detail.equity || [] }],
+    colors: ["#4f8cff"],
+    fill: { type: "gradient", gradient: { opacityFrom: 0.45, opacityTo: 0.02 } },
+    stroke: { width: 2 },
+    xaxis: { labels: { show: false } },
+    yaxis: { labels: { formatter: (v) => `\u20B9${Math.round(v).toLocaleString("en-IN")}` } },
+  });
+  charts.equity.render();
+
+  charts.dd = new ApexCharts(document.getElementById("ddChart"), {
+    ...chartBase("area", 230),
+    series: [{ name: "Drawdown", data: detail.drawdown || [] }],
+    colors: ["#ef4444"],
+    fill: { type: "gradient", gradient: { opacityFrom: 0.35, opacityTo: 0.02 } },
+    stroke: { width: 2 },
+    xaxis: { labels: { show: false } },
+    yaxis: { labels: { formatter: (v) => `${Number(v).toFixed(1)}%` } },
+  });
+  charts.dd.render();
+
+  const months = Object.keys(detail.monthly || {});
+  charts.monthly = new ApexCharts(document.getElementById("monthlyChart"), {
+    ...chartBase("bar", 230),
+    series: [{ name: "Monthly", data: months.map((m) => detail.monthly[m]) }],
+    colors: ["#14b8a6"],
+    xaxis: { categories: months, labels: { rotate: -45 } },
+    yaxis: { labels: { formatter: (v) => `\u20B9${Math.round(v).toLocaleString("en-IN")}` } },
+  });
+  charts.monthly.render();
+}
+
+function renderHeatmap(detail) {
+  const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  const rows = {};
+
+  Object.entries(detail.monthly || {}).forEach(([monthKey, value]) => {
+    const [year, month] = monthKey.split("-");
+    if (!rows[year]) rows[year] = Array(12).fill(null);
+    rows[year][Number(month) - 1] = Number(value);
+  });
+
+  const years = Object.keys(rows).sort();
+  if (!years.length) {
+    document.getElementById("heatTable").innerHTML = "<tr><td style='color:#96a5cb;padding:12px'>No monthly data for selected year filter.</td></tr>";
+    return;
+  }
+
+  let html = "<thead><tr><th>Year</th>";
+  html += months.map((m) => `<th>${m}</th>`).join("");
+  html += "<th>Total</th></tr></thead><tbody>";
+
+  years.forEach((year) => {
+    const vals = rows[year];
+    let total = 0;
+    html += `<tr><td>${year}</td>`;
+    vals.forEach((v) => {
+      if (v == null) {
+        html += `<td><div class='heat-cell heat-zero'>-</div></td>`;
+      } else {
+        total += v;
+        const c = v >= 0 ? "heat-pos" : "heat-neg";
+        html += `<td><div class='heat-cell ${c}'>${fmtMoney(v)}</div></td>`;
+      }
+    });
+    html += `<td><div class='heat-cell ${total >= 0 ? "heat-pos" : "heat-neg"}'>${fmtMoney(total)}</div></td></tr>`;
+  });
+
+  html += "</tbody>";
+  document.getElementById("heatTable").innerHTML = html;
+}
+
+function renderDayTable(detail) {
+  const dayStats = detail.dayStats || [];
+  let html = "<thead><tr><th>Date</th><th>Trades</th><th>Wins</th><th>Losses</th><th>Net</th><th>Symbols</th></tr></thead><tbody>";
+  dayStats.forEach((d) => {
+    html += `<tr>
+      <td>${d.date}</td>
+      <td>${d.trades}</td>
+      <td class='pos'>${d.wins}</td>
+      <td class='neg'>${d.losses}</td>
+      <td class='${cls(d.pnl)}'><strong>${fmtMoney(d.pnl)}</strong></td>
+      <td style='text-align:left;color:#96a5cb'>${d.symbols || ""}</td>
+    </tr>`;
+  });
+  html += "</tbody>";
+  document.getElementById("dayTable").innerHTML = html;
+}
+
+function renderTradeTable(detail) {
+  const trades = [...(detail.trades || [])]
+    .sort((a, b) => `${b.date} ${b.entryTime}`.localeCompare(`${a.date} ${a.entryTime}`))
+    .slice(0, 350);
+
+  let html = "<thead><tr><th>Date</th><th>Symbol</th><th>Side</th><th>Qty</th><th>Entry</th><th>Exit</th><th>Reason</th><th>Net P&L</th></tr></thead><tbody>";
+  trades.forEach((t) => {
+    html += `<tr>
+      <td>${t.date}</td>
+      <td style='text-align:left;color:#9ec3ff'>${t.symbol}</td>
+      <td>${t.direction}</td>
+      <td>${fmtInt(t.qty)}</td>
+      <td>${fmtMoney(t.entryPrice)}</td>
+      <td>${fmtMoney(t.exitPrice)}</td>
+      <td style='text-align:left;color:#96a5cb'>${t.exitReason}</td>
+      <td class='${cls(t.pnl)}'><strong>${fmtMoney(t.pnl)}</strong></td>
+    </tr>`;
+  });
+  html += "</tbody>";
+  document.getElementById("tradeTable").innerHTML = html;
+}
+
+async function refresh() {
+  if (!META) return;
+
+  showLoading(true);
+  document.getElementById("noData").style.display = "none";
+
+  try {
+    renderTopTabs();
+    renderFilterRows();
+    renderVariantInfo();
+
+    const cfg = getActiveConfig();
+    const key = comboKey(cfg);
+
+    const summary = await loadSummary();
+    const core = summary[key];
+
+    if (!core) {
+      destroyCharts();
+      document.getElementById("kpiGrid").innerHTML = "";
+      document.getElementById("heatTable").innerHTML = "";
+      document.getElementById("dayTable").innerHTML = "";
+      document.getElementById("tradeTable").innerHTML = "";
+      const noData = document.getElementById("noData");
+      noData.textContent = "No data available for the selected combination. Try a different exit, leverage, or risk config.";
+      noData.style.display = "block";
+      showLoading(false);
+      return;
+    }
+
+    const detail = await loadDetail(key);
+    state.currentDetail = detail;
+    refreshDataOnly();
+  } catch (err) {
+    const noData = document.getElementById("noData");
+    noData.textContent = String(err);
+    noData.style.display = "block";
+    destroyCharts();
+  } finally {
+    showLoading(false);
+  }
+}
+
+function refreshDataOnly() {
+  if (!state.currentDetail) return;
+
+  const availableYears = yearsFromDetail(state.currentDetail);
+  if (state.year !== "all" && !availableYears.includes(state.year)) {
+    state.year = "all";
+  }
+
+  const filtered = filterByYear(state.currentDetail);
+
+  renderYearBar(state.currentDetail);
+  renderKPIs(filtered);
+  renderCharts(filtered);
+  renderHeatmap(filtered);
+  renderDayTable(filtered);
+  renderTradeTable(filtered);
+}
+
+function init() {
+  if (!META || !META.strategies || !META.strategies.length) {
+    document.getElementById("noData").textContent = "meta.js is missing or invalid. Run build_combined_netlify.py first.";
+    document.getElementById("noData").style.display = "block";
+    return;
+  }
+
+  const defaults = META.defaultSelection || {};
+  state.mode = defaultId(META.modes, defaults.mode || "flat");
+  state.strategy = defaultId(META.strategies, defaults.strategy || "s3");
+  state.exit = defaultId(META.exits, defaults.exit || "e1");
+  state.lev = defaultId(META.leverages, defaults.lev || "3xS");
+  state.baseCfg = defaultId(META.baseConfigs, defaults.baseCfg || "500k_5pct");
+  setView("monthly");
+  refresh();
+}
+
+init();
+</script>
+</body>
+</html>

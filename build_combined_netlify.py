@@ -1366,8 +1366,20 @@ def write_meta(strategies: list[StrategyMeta], full_configs: list[FullConfig]) -
     (OUT_DIR / "meta.js").write_text(script, encoding="utf-8")
 
 
+def stamp_report_html(asset_version: str) -> None:
+    report_path = OUT_DIR / "report.html"
+    if not report_path.exists():
+        return
+
+    content = report_path.read_text(encoding="utf-8")
+    content = re.sub(r'meta\.js\?v=[^"]+', f'meta.js?v={asset_version}', content, count=1)
+    content = re.sub(r'const ASSET_VERSION = "[^"]+";', f'const ASSET_VERSION = "{asset_version}";', content, count=1)
+    report_path.write_text(content, encoding="utf-8")
+
+
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    asset_version = datetime.now().strftime("%Y%m%d%H%M%S")
 
     full_configs = build_full_configs()
     strategy3_context = load_strategy3_context()
@@ -1396,6 +1408,7 @@ def main() -> None:
 
     strategies = [s1_meta, s2_meta, s3_meta]
     write_meta(strategies, full_configs)
+    stamp_report_html(asset_version)
 
     print("Building Strategy 1 from original dashboard rows...")
     generate_legacy_dashboard_strategy(s1_meta, full_configs, trade_index=0, entry_clock="10:00:00", source_variant_id="original_s1")

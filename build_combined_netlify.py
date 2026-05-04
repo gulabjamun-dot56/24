@@ -454,6 +454,24 @@ def apply_trade_log_limit(detail: dict[str, Any]) -> None:
     detail["tradeLogLimitedTo"] = TRADE_LOG_LIMIT
 
 
+def enrich_precomputed_detail(detail: dict[str, Any]) -> None:
+    trades = detail.get("trades")
+    if not isinstance(trades, list) or not trades:
+        return
+
+    needs_day_rollup = not isinstance(detail.get("dayStats"), list) or any(
+        not isinstance(day.get("gross"), (int, float)) or not isinstance(day.get("charges"), (int, float))
+        for day in detail.get("dayStats", [])
+        if isinstance(day, dict)
+    )
+
+    if not needs_day_rollup:
+        return
+
+    rebuilt = summarize_trades(trades, as_float(detail.get("initialCapital"), 0.0))
+    detail["dayStats"] = rebuilt.get("dayStats", [])
+
+
 def add_combo_metadata(detail: dict[str, Any], strategy_meta: StrategyMeta, mode: str, exit_spec: ExitSpec, cfg: FullConfig) -> None:
     detail["strategyId"] = strategy_meta.id
     detail["strategyTitle"] = strategy_meta.title
@@ -850,6 +868,7 @@ def generate_precomputed_strategy(plan: PrecomputedPlan, strategy_meta: Strategy
                 if not isinstance(detail, dict):
                     raise ValueError(f"Invalid detail payload in {source_detail_path}")
 
+                enrich_precomputed_detail(detail)
                 apply_trade_log_limit(detail)
                 add_combo_metadata(detail, strategy_meta, mode, exit_spec, cfg)
 
@@ -1363,9 +1382,9 @@ def main() -> None:
     s2_meta = StrategyMeta(
         id="s2",
         title="Strategy 2 - Gap Fade Reversal",
-        subtitle="Original dashboard Strategy 2 trade universe preserved; exit, leverage, and risk variants are replayed on the same 44792 entries.",
-        source_engine="temp/index.html initTrades(1) original legacy rows + replayed e1/e4/e8 sizing variants",
-        max_trades=44792,
+        subtitle="Official 5-minute momentum-reversal engine outputs with precomputed e1/e4/e8, leverage, and risk variants.",
+        source_engine="strategies/combined_netlify/5min_mr summary_v1/data_v1 precomputed engine outputs",
+        max_trades=2946,
     )
     s3_meta = StrategyMeta(
         id="s3",
@@ -1381,8 +1400,8 @@ def main() -> None:
     print("Building Strategy 1 from original dashboard rows...")
     generate_legacy_dashboard_strategy(s1_meta, full_configs, trade_index=0, entry_clock="10:00:00", source_variant_id="original_s1")
 
-    print("Building Strategy 2 from original dashboard rows...")
-    generate_legacy_dashboard_strategy(s2_meta, full_configs, trade_index=1, entry_clock="09:35:00", source_variant_id="original_s2")
+    print("Building Strategy 2 from precomputed engine outputs...")
+    generate_precomputed_strategy(S2_PLAN, s2_meta, full_configs)
 
     print("Building Strategy 3 from raw setups with multiprocessing backtests...")
     generate_strategy3_data(s3_meta, strategy3_context, full_configs)
@@ -1391,7 +1410,7 @@ def main() -> None:
     print(f"  Output folder: {OUT_DIR}")
     print("  Sources:")
     print("   - S1 from temp/index.html initTrades(0), preserving the original 1190 entries")
-    print("   - S2 from temp/index.html initTrades(1), preserving the original 44792 entries")
+    print("   - S2 from strategies/combined_netlify/5min_mr precomputed engine outputs")
     print("   - S3 from temp/search_strategy3_fixedrisk.py candidates + e1/e4/e8 re-simulation")
 
 

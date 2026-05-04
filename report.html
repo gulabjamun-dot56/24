@@ -778,7 +778,21 @@ function renderYearBar(detail) {
 }
 
 function deriveFilteredMetrics(detail, filtered) {
-  const filteredDaysAsc = sortDaysAsc(filtered.dayStats);
+  let normalizedFiltered = filtered;
+  const needsTradeAggregation = Array.isArray(filtered.trades)
+    && filtered.trades.length
+    && (!Array.isArray(filtered.dayStats)
+      || !filtered.dayStats.length
+      || filtered.dayStats.some((day) => day.gross == null || day.charges == null));
+
+  if (needsTradeAggregation) {
+    normalizedFiltered = {
+      ...filtered,
+      ...buildTradeSlices(filtered.trades),
+    };
+  }
+
+  const filteredDaysAsc = sortDaysAsc(normalizedFiltered.dayStats);
   const cfg = getActiveConfig();
   const initialCapital = round2(num(cfg ? cfg.base_capital : detail.initialCapital));
   let currentEquity = initialCapital;
@@ -829,7 +843,7 @@ function deriveFilteredMetrics(detail, filtered) {
   const maxDrawdown = drawdown.length ? round2(Math.max(...drawdown)) : 0;
 
   return {
-    ...filtered,
+    ...normalizedFiltered,
     totalTrades,
     wins,
     losses,

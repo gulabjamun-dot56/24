@@ -775,10 +775,7 @@ def generate_legacy_dashboard_strategy(
         for cfg in full_configs:
             out_key = f"{strategy_meta.id}_{exit_spec.id}_{cfg.id}"
 
-            if exit_spec.id == "e8" and cfg.id == "500k_5pct_3xS":
-                flat_detail = json.loads(json.dumps(source_detail))
-            else:
-                flat_detail = rebuild_legacy_detail_from_original(source_detail, exit_spec.id, cfg, compound=False)
+            flat_detail = rebuild_legacy_detail_from_original(source_detail, exit_spec.id, cfg, compound=False)
             compound_detail = rebuild_legacy_detail_from_original(source_detail, exit_spec.id, cfg, compound=True)
 
             apply_trade_log_limit(flat_detail)

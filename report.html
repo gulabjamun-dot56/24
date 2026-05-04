@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trinity - Combined Strategy Report</title>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-<script src="meta.js"></script>
+<script>
+  document.write('<script src="meta.js?v=' + Date.now() + '"><\\/script>');
+</script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -412,6 +414,12 @@ tr:hover td { background: var(--surface2); }
 
 <script>
 const META = window.DASH_META || null;
+const ASSET_VERSION = META && META.generatedAt ? encodeURIComponent(META.generatedAt) : String(Date.now());
+
+function assetUrl(path) {
+  const sep = path.includes("?") ? "&" : "?";
+  return `${path}${sep}v=${ASSET_VERSION}`;
+}
 
 const state = {
   mode: "flat",
@@ -655,8 +663,8 @@ function detailCacheKey(key) {
 async function loadSummary() {
   const key = summaryCacheKey();
   if (cache.summary[key]) return cache.summary[key];
-  const url = `${state.strategy}/summary_${state.mode}.json`;
-  const res = await fetch(url);
+  const url = assetUrl(`${state.strategy}/summary_${state.mode}.json`);
+  const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`Failed to load summary: ${url}`);
   const data = await res.json();
   cache.summary[key] = data;
@@ -666,8 +674,8 @@ async function loadSummary() {
 async function loadDetail(key) {
   const ck = detailCacheKey(key);
   if (cache.detail[ck]) return cache.detail[ck];
-  const url = `${state.strategy}/data_${state.mode}/${key}.json`;
-  const res = await fetch(url);
+  const url = assetUrl(`${state.strategy}/data_${state.mode}/${key}.json`);
+  const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`Failed to load detail: ${url}`);
   const data = await res.json();
   cache.detail[ck] = data;
